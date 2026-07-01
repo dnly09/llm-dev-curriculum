@@ -10,9 +10,13 @@ __pycache__/
 outputs/
 smoke/
 checkpoints/
+*.pt
 lora_model/
 model_merged_16bit/
 model_gguf/
+model_gguf_gguf/
+lora_finetome/
+lora_model/
 
 # Datasets (re-downloadable)
 data/
@@ -26,3 +30,5 @@ wandb/
 !requirements.lock
 *.tar.gz
 unsloth_compiled_cache/
+
+
