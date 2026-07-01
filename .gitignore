@@ -17,6 +17,9 @@ model_gguf/
 model_gguf_gguf/
 lora_finetome/
 lora_model/
+full_ft_model/
+outputs_full_ft/
+outputs_fc/
 
 # Datasets (re-downloadable)
 data/

@@ -10,13 +10,23 @@ Full rationale and reference material: [`docs/curriculum_plan.md`](docs/curricul
 
 | Stage | Status | Directory |
 |---|---|---|
-| 0. Environment setup | 🔲 not started | [`environment/`](environment/) |
-| 1. Fine-tuning (LoRA/QLoRA) | 🔲 not started | [`stage1_finetuning/`](stage1_finetuning/) |
+| 0. Environment setup | ✅ done | [`environment/`](environment/) |
+| 1. Fine-tuning (LoRA/QLoRA) | ✅ done | [`stage1_finetuning/`](stage1_finetuning/) |
 | 2. Distillation | 🔲 not started | [`stage2_distillation/`](stage2_distillation/) |
 | 3. Pre-training from scratch | 🔲 not started | [`stage3_pretraining/`](stage3_pretraining/) |
 | 4. Capstone (all three + scaled cloud run) | 🔲 not started | [`stage4_capstone/`](stage4_capstone/) |
 
 Track status in [`PROGRESS.md`](PROGRESS.md).
+
+## Stage 1 results
+
+![Eval loss comparison across three fine-tuning runs](assets/stage1_eval_loss_comparison.gif)
+
+Function calling was the run with a real, scriptable gap between base and fine-tuned:
+
+![Function calling pass rates: base vs fine-tuned](assets/stage1_function_calling_scores.png)
+
+Full writeup: [`stage1_finetuning/README.md`](stage1_finetuning/README.md#results)
 
 ## Ground rules (from the curriculum doc)
 
