@@ -13,11 +13,11 @@
 ## Stage 1 — Fine-tuning
 
 - [x] Track A: hand-built LoRA loop (raw PyTorch), can explain accumulation/autocast/alpha-r
-- [ ] Track B: QLoRA fine-tune of 7-8B model, clean falling loss curve
+- [x] Track B: QLoRA fine-tune of 7-8B model, clean falling loss curve
 - [ ] One full fine-tune of a ~1B model (feel the VRAM difference vs QLoRA)
-- [ ] Held-out eval: loss curves + qualitative side-by-side + one quantitative metric
-- [ ] Overfitting diagnosed/ruled out
-- [ ] Exported to GGUF, ran through llama.cpp stack
+- [x] Held-out eval: loss curves + qualitative side-by-side + one quantitative metric
+- [x] Overfitting diagnosed/ruled out
+- [x] Exported to GGUF, ran through llama.cpp stack
 - [ ] Repeated on own domain instruction set (chem-eng / process engineering)
 
 ## Stage 2 — Distillation
