@@ -1,13 +1,13 @@
 # Progress
 
 ## Phase 0 — Environment
-- [ ] WSL2 Ubuntu 24.04 confirmed, `nvidia-smi` shows 5090 + driver
-- [ ] CUDA Toolkit 12.8/12.9 installed from NVIDIA repo (not apt)
-- [ ] `uv` venv created, torch cu128/cu129 ≥2.11.0 installed
-- [ ] bitsandbytes ≥0.49.2, transformers/TRL/PEFT/accelerate installed
-- [ ] `environment/verify_stack.py` passes
-- [ ] NF4 QLoRA 1-step smoke test passes
-- [ ] `requirements.lock` committed
+- [x] WSL2 Ubuntu 24.04 confirmed, nvidia-smi shows 5090 + driver
+- [x] CUDA Toolkit 12.8/12.9 installed from NVIDIA repo (not apt)
+- [x] uv venv created, torch cu128/cu129 ≥2.11.0 installed
+- [x] bitsandbytes ≥0.49.2, transformers/TRL/PEFT/accelerate installed
+- [x] environment/verify_stack.py passes
+- [x] NF4 QLoRA 1-step smoke test passes
+- [x] requirements.lock committed
 
 ## Stage 1 — Fine-tuning
 - [ ] Track A: hand-built LoRA loop (raw PyTorch), can explain accumulation/autocast/alpha-r
