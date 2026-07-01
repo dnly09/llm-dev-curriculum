@@ -25,3 +25,4 @@ wandb/
 # Lockfiles you DO want to keep — explicitly allow
 !requirements.lock
 *.tar.gz
+unsloth_compiled_cache/
