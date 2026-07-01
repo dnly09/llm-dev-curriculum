@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.venv*/
+
+# Model artifacts — big binaries don't belong in git
+*.gguf
+*.safetensors
+*.bin
+outputs/
+smoke/
+checkpoints/
+lora_model/
+model_merged_16bit/
+model_gguf/
+
+# Datasets (re-downloadable)
+data/
+*.parquet
+
+# Logs
+wandb/
+*.log
+
+# Lockfiles you DO want to keep — explicitly allow
+!requirements.lock
