@@ -22,10 +22,18 @@
 
 ## Stage 2 — Distillation
 
-- [ ] Hand-coded KL+CE distillation on a tiny teacher/student pair
-- [ ] TRL `GKDTrainer` (on-policy) run
-- [ ] DistillKit offline-logit distillation: Stage-1 7-8B teacher → 1B student
-- [ ] Student beats its own from-scratch SFT baseline on domain eval
+- [x] Environment: `.venv-distill` created, torch 2.11.0+cu128 / bitsandbytes 0.49.2 pinned, `trl>=0.12` (resolved to 1.7.0) installed, torch re-verified after each install
+- [x] Phase 0 gate passed: transformers 5.12.1, trl 1.7.0, GKD import confirmed at `trl.experimental.gkd`, `GKDConfig` uses `max_length` (not `max_seq_length`), `TRL_EXPERIMENTAL_SILENCE=1` set in venv activate script
+- [x] `requirements.distill.lock` committed
+- [x] Hand-coded KL+CE distillation on the real teacher/student pair (Qwen2.5-7B-Instruct → Qwen2.5-0.5B-Instruct), T/alpha sweep + one real training step
+- [ ] Tier 1 — sequence-level KD (teacher generates completions, student SFTs on them)
+- [ ] Tier 2 — DistillKit offline-logit distillation: 7B teacher → 0.5-1.5B student
+- [ ] Tier 3 — TRL `GKDTrainer` (on-policy) run
+- [ ] Head-to-head eval: distilled student vs plain-SFT student vs teacher, `score_function_calling.py`
+- [ ] Distilled student exported to GGUF, served through GPU llama.cpp build
+- [ ] (Stretch) Tier 4 — cross-tokenizer distillation via GOLD/ULD
+
+**Known gotcha logged:** Qwen2.5 checkpoints pad `lm_head`/embedding matrices to different widths depending on **model size**, independent of base-vs-instruct — 0.5B pads to `vocab_size=151936`, 7B pads to `152064`, even though the real tokenizer vocab (`len(tokenizer)`) is smaller than both (~151665) and identical across the family. Any logit-KD code must truncate both teacher and student logits to `len(tokenizer)` before computing KL, or it hits a shape mismatch (or worse, silently compares padded noise columns if sizes happened to match by luck).
 
 ## Stage 3 — Pre-training
 
