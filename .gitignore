@@ -7,6 +7,7 @@ __pycache__/
 *.gguf
 *.safetensors
 *.bin
+*.jsonl
 outputs/
 smoke/
 checkpoints/
@@ -20,6 +21,8 @@ lora_model/
 full_ft_model/
 outputs_full_ft/
 outputs_fc/
+outputs_student_seqkd/
+student_seqkd_full/
 
 # Datasets (re-downloadable)
 data/
