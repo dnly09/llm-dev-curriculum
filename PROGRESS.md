@@ -29,7 +29,7 @@
 - [x] Tier 1 — sequence-level KD (teacher generates completions, student SFTs on them)
 - [ ] Tier 2 — DistillKit offline-logit distillation: 7B teacher → 0.5-1.5B student
 - [ ] Tier 3 — TRL `GKDTrainer` (on-policy) run
-- [x] Head-to-head eval: distilled student vs plain-SFT student vs teacher, on held-out 240-example split (121 function_call examples scored)
+- [x] Head-to-head eval: distilled student vs plain-SFT student vs teacher, on held-out 240-example split (121 function_call examples for exact_args, full 240 for call-vs-clarify F1)
 - [ ] Distilled student exported to GGUF, served through GPU llama.cpp build
 - [ ] (Stretch) Tier 4 — cross-tokenizer distillation via GOLD/ULD
 
@@ -39,6 +39,19 @@
 - One unique miss (dropped "comedy" from a movie search) is a genuine content-loss error — real, but n=1, not a strong trend.
 
 **Lesson:** exact-match scoring against one data source's labeling conventions can penalize a distilled model for learning an equally valid but stylistically different convention from the teacher. Before concluding a distillation method underperformed, diff the actual misses, not just the aggregate score. For Tier 2/3: consider either explicitly prompting the teacher to match the target dataset's placeholder-key convention during generation, or building a normalized/fuzzy scorer (case-insensitive, singular/plural-insensitive, empty-key-tolerant) for a fairer comparison.
+
+**Follow-up: "call vs clarify" binary classification metric (`score_call_vs_clarify.py`).** Reused the same four checkpoints, no retraining — scored a cleaner, unambiguous sub-task (does the model correctly decide to call a function at all, vs. ask a clarifying question first) on the full 240-example held-out set via precision/recall/F1. Ground truth here has no formatting ambiguity, so this sidesteps every artifact from the exact_args metric above:
+
+| Model | Precision | Recall | F1 | Accuracy | FP (of 119 negatives) |
+|---|---|---|---|---|---|
+| base_student (untrained) | 50.6% | 100% | 67.2% | 50.8% | 118 |
+| baseline_sft | 97.6% | 100% | 98.8% | 98.8% | 3 |
+| **tier1_distilled** | 89.6% | 100% | **94.5%** | 94.2% | 14 |
+| teacher (Qwen2.5-7B-Instruct) | 67.2% | 100% | 80.4% | 75.4% | 59 |
+
+**Real result: tier1_distilled beat its own teacher decisively** (94.5% F1 vs 80.4%). The teacher's ~50% premature-call rate on this held-out set matches the ~46% over-triggering rate found on the training set earlier — a consistent, real flaw, not a fluke. Filtering those hallucinated premature calls out of the training data (`filter_teacher_completions.py`) before the student ever saw them meant the student learned better call/clarify judgment than the teacher it was distilled from. This is a legitimate, mechanistically-explained distillation win, even though it isn't a win over baseline_sft.
+
+**Why baseline_sft still wins this specific metric, and what that implies going forward:** this decision has a clean, directly-trainable ground-truth label already in the dataset (`convo[1]["from"] == "function_call"`). Tier 1 sequence-level KD is mechanically "SFT on a different (teacher-generated) label set" — it has no channel to transmit anything beyond a single hard text target, so on any task where the *original* label is already clean, training on the original will structurally beat training on a teacher's approximation of it. **Tier 1 cannot, by construction, beat clean-label SFT.** Only logit-level distillation (Tier 2) transmits the teacher's full probability distribution — genuine extra signal beyond a hard label — which is the actual mechanism that could give distillation a real edge over plain SFT. This is the reasoning for moving to Tier 2 next rather than iterating further on Tier 1 variants.
 
 **Known gotcha logged:** Qwen2.5 checkpoints pad `lm_head`/embedding matrices to different widths depending on **model size**, independent of base-vs-instruct — 0.5B pads to `vocab_size=151936`, 7B pads to `152064`, even though the real tokenizer vocab (`len(tokenizer)`) is smaller than both (~151665) and identical across the family. Any logit-KD code must truncate both teacher and student logits to `len(tokenizer)` before computing KL, or it hits a shape mismatch (or worse, silently compares padded noise columns if sizes happened to match by luck).
 
