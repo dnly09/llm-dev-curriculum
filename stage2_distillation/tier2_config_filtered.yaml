@@ -1,0 +1,48 @@
+project_name: stage2-tier2-filtered
+model: Qwen/Qwen2.5-0.5B-Instruct
+
+dataset:
+  train_dataset:
+    disk_path: ./teacher_logits_filtered_hfds
+  prepacked: true
+  seed: 42
+
+teacher:
+  kind: dataset
+  logprob_compressor:
+    d: 151665
+    k: 64
+    exact_k: 64
+    exact_dtype: float32
+    polynomial_terms: null
+    term_dtype: float32
+    residual_bins: []
+    delta_encoding: true
+    error_diffusion: false
+    normalize_t: false
+
+sequence_length: 768
+output_path: ./tier2_student_filtered
+use_flash_attention: false
+
+loss_functions:
+  - function: cross_entropy
+    weight: 0.5
+  - function: kl
+    weight: 0.5
+    temperature: 1.0
+    missing_probability_handling: zero
+
+training_args:
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 1
+  learning_rate: 2.0e-5
+  logging_steps: 10
+  optim: adamw_torch
+  bf16: true
+  gradient_checkpointing: false
+  report_to: none
+  save_strategy: "no"
+  remove_unused_columns: false
+  remove_unused_columns: false
