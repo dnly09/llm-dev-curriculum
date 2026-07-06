@@ -23,8 +23,17 @@ outputs_full_ft/
 outputs_fc/
 outputs_student_seqkd/
 student_seqkd_full/
+outputs_student_baseline/
+student_baseline_sft/
+teacher_logits_filtered_hfds/
+teacher_logits_unfiltered_hfds/
+tier2_student_filtered/
+tier2_student_filtered_smoke/
+tier2_student_unfiltered/
+tier2_student_unfiltered_smoke/
 
 # Datasets (re-downloadable)
+distillkit/
 data/
 *.parquet
 
