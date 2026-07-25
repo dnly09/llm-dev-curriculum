@@ -28,7 +28,7 @@
 - [x] Hand-coded KL+CE distillation on the real teacher/student pair (Qwen2.5-7B-Instruct → Qwen2.5-0.5B-Instruct), T/alpha sweep + one real training step
 - [x] Tier 1 — sequence-level KD (teacher generates completions, student SFTs on them)
 - [x] Tier 2 — DistillKit offline-logit distillation: 7B teacher → 0.5B student, both filtered (2157 ex) and unfiltered (2760 ex) splits captured and trained, for direct comparison
-- [ ] Tier 3 — TRL `GKDTrainer` (on-policy) run
+- [ ] Tier 3 — TRL `GKDTrainer` (on-policy) run. GKDConfig.warmup_steps is silently ignored by GKDTrainer in trl 1.7.0 — verified the config resolves correctly (get_warmup_steps() returns the right value) but the actual scheduler is built with num_warmup_steps=0 regardless; confirmed by matching the logged LR trajectory to the zero-warmup formula exactly.
 - [x] Head-to-head eval: all six checkpoints (base_student, baseline_sft, tier1_distilled, tier2_unfiltered, tier2_filtered, teacher) scored on the same held-out 240-example split (121 function_call examples for exact_args, full 240 for call-vs-clarify F1)
 - [x] Winning checkpoint (tier2_unfiltered) exported to GGUF (q4_k_m, 373MB), verified running through GPU llama.cpp build with correct JSON-only function-call output
 - [ ] (Stretch) Tier 4 — cross-tokenizer distillation via GOLD/ULD

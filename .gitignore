@@ -31,6 +31,11 @@ tier2_student_filtered/
 tier2_student_filtered_smoke/
 tier2_student_unfiltered/
 tier2_student_unfiltered_smoke/
+gkd_train_unfiltered/
+outputs_gkd/
+outputs_gkd_full/
+outputs_gkd_smoke/
+gkd_student_tier3/
 
 # Datasets (re-downloadable)
 distillkit/

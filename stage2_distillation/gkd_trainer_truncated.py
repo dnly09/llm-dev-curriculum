@@ -56,6 +56,35 @@ class GKDTrainerTruncated(GKDTrainer):
         super().__init__(*args, **kwargs)
         self._gkd_vocab_size = vocab_size
 
+    def create_scheduler(self, num_training_steps, optimizer=None):
+        """Forcibly rebuild the LR scheduler, bypassing base Trainer.create_scheduler's
+        `if self.lr_scheduler is None:` guard.
+
+        Diagnosed against the Tier 3 full run (see PROGRESS.md): GKDConfig(warmup_steps=30)
+        resolves correctly in isolation -- cfg.get_warmup_steps(345) == 30, confirmed via a
+        standalone check -- but the actual logged learning-rate trajectory from that run
+        matched a num_warmup_steps=0 schedule exactly (verified by reproducing the linear
+        decay formula against the logged values step-by-step). That means self.lr_scheduler
+        was already non-None by the time base Trainer.create_scheduler ran, so its guard
+        skipped rebuilding with the correct warmup_steps. Root cause inside GKDTrainer/
+        SFTTrainer's init path not isolated further; this override sidesteps it by never
+        deferring to a pre-existing scheduler.
+
+        Otherwise identical to base Trainer.create_scheduler (transformers 5.13.0).
+        """
+        from transformers.optimization import get_scheduler
+
+        optimizer = optimizer if optimizer is not None else self.optimizer
+        self.lr_scheduler = get_scheduler(
+            self.args.lr_scheduler_type,
+            optimizer=optimizer,
+            num_warmup_steps=self.args.get_warmup_steps(num_training_steps),
+            num_training_steps=num_training_steps,
+            scheduler_specific_kwargs=self.args.lr_scheduler_kwargs,
+        )
+        self._created_lr_scheduler = True
+        return self.lr_scheduler
+
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         if self.use_liger_gkd_loss:
             # Not truncated — this project doesn't enable use_liger_kernel for
